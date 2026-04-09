@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎨 YouTube Video Colors</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: #0d0d0d;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+  .header {
+    text-align: center;
+    padding: 3em 1em 1.5em;
+  }
+  .header h1 { font-size: 2.2em; font-weight: 700; }
+  .header h1 span { background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header p { color: #888; margin-top: 0.5em; font-size: 0.95em; }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 1.5em 3em; }
+
+  .card {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 1.5em;
+    margin-bottom: 1.5em;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #2a2a2a;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+
+  .card-header { display: flex; align-items: center; gap: 1em; margin-bottom: 1em; }
+  .card-thumb { width: 120px; height: 68px; border-radius: 8px; object-fit: cover; background: #333; flex-shrink: 0; }
+  .card-info h3 { font-size: 1.05em; font-weight: 600; line-height: 1.3; }
+  .card-info .meta { color: #777; font-size: 0.82em; margin-top: 0.3em; }
+
+  .color-bar {
+    display: flex;
+    height: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8em;
+  }
+  .color-bar div { transition: flex 0.3s; position: relative; }
+  .color-bar div:hover { flex-grow: 1.5 !important; }
+
+  .color-list { display: flex; flex-wrap: wrap; gap: 0.5em; }
+  .color-chip {
+    display: flex; align-items: center; gap: 0.4em;
+    background: #222; border-radius: 8px; padding: 0.3em 0.7em;
+    font-size: 0.82em; font-family: 'SF Mono', Monaco, monospace;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .color-chip:hover { background: #333; }
+  .color-chip .swatch {
+    width: 14px; height: 14px; border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .color-chip .pct { color: #888; }
+
+  .detail-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 100;
+    overflow-y: auto; padding: 2em;
+  }
+  .detail-overlay.active { display: block; }
+  .detail-content {
+    max-width: 700px; margin: 0 auto;
+    background: #1a1a1a; border-radius: 16px; padding: 2em;
+  }
+  .detail-content .close {
+    float: right; background: none; border: none;
+    color: #888; font-size: 1.5em; cursor: pointer;
+  }
+  .detail-content .close:hover { color: #fff; }
+  .detail-content h2 { margin-bottom: 0.5em; }
+  .detail-content .big-bar { height: 60px; border-radius: 12px; overflow: hidden; display: flex; margin: 1em 0; }
+  .detail-color-row {
+    display: flex; align-items: center; gap: 1em;
+    padding: 0.6em 0; border-bottom: 1px solid #2a2a2a;
+    font-family: 'SF Mono', Monaco, monospace; font-size: 0.9em;
+  }
+  .detail-swatch { width: 40px; height: 28px; border-radius: 6px; }
+  .copied-toast {
+    position: fixed; bottom: 2em; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 0.6em 1.5em;
+    border-radius: 20px; font-size: 0.85em; opacity: 0; transition: opacity 0.3s;
+    z-index: 200;
+  }
+  .copied-toast.show { opacity: 1; }
+
+  .empty {
+    text-align: center; padding: 4em 1em; color: #555;
+  }
+  .empty a { color: #48dbfb; text-decoration: none; }
+
+  .loading { text-align: center; padding: 3em; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>YouTube Video Colors</span></h1>
+  <p>从 YouTube 视频中提取主要颜色</p>
+</div>
+
+<div class="container">
+  <div id="app" class="loading">加载中...</div>
+</div>
+
+<div class="detail-overlay" id="detail">
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<div class="copied-toast" id="toast">已复制!</div>
+
+<script>
+const REPO = location.hostname.includes('github.io')
+  ? '' // same origin
+  : 'https://raw.githubusercontent.com/' + (location.pathname.split('/')[1] || 'BH3GEI') + '/yt-video-colors/gh-pages';
+
+async function loadIndex() {
+  const basePaths = [
+    'results/index.json',
+    REPO + '/results/index.json'
+  ];
+  for (const p of basePaths) {
+    try {
+      const r = await fetch(p);
+      if (r.ok) return await r.json();
+    } catch {}
+  }
+  return null;
+}
+
+async function loadResult(videoId) {
+  const paths = [
+    `results/${videoId}.json`,
+    `${REPO}/results/${videoId}.json`
+  ];
+  for (const p of paths) {
+    try {
+      const r = await fetch(p);
+      if (r.ok) return await r.json();
+    } catch {}
+  }
+  return null;
+}
+
+function copyHex(hex) {
+  navigator.clipboard.writeText(hex);
+  const t = document.getElementById('toast');
+  t.textContent = `已复制 ${hex}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1200);
+}
+
+function renderCard(item) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.onclick = () => showDetail(item.video_id);
+  const date = new Date(item.analyzed_at).toLocaleDateString('zh-CN');
+  card.innerHTML = `
+    <div class="card-header">
+      <img class="card-thumb" src="https://i.ytimg.com/vi/${item.video_id}/mqdefault.jpg" alt="">
+      <div class="card-info">
+        <h3>${esc(item.title)}</h3>
+        <div class="meta">${date}</div>
+      </div>
+    </div>
+    <div class="color-bar" id="bar-${item.video_id}"></div>
+  `;
+  return card;
+}
+
+async function showDetail(videoId) {
+  const data = await loadResult(videoId);
+  if (!data) return;
+  const el = document.getElementById('detailContent');
+  const thumbSrc = data.thumbnail
+    ? `data:image/jpeg;base64,${data.thumbnail}`
+    : `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+  let rows = data.colors.map((c, i) => `
+    <div class="detail-color-row" onclick="copyHex('${c.hex}')" title="点击复制">
+      <span style="color:#666">${i + 1}</span>
+      <div class="detail-swatch" style="background:${c.hex}"></div>
+      <span>${c.hex}</span>
+      <span style="color:#666;margin-left:auto">${c.percentage}%</span>
+    </div>
+  `).join('');
+  el.innerHTML = `
+    <button class="close" onclick="document.getElementById('detail').classList.remove('active')">&times;</button>
+    <h2>${esc(data.title)}</h2>
+    <p style="color:#777;font-size:0.85em;margin-bottom:1em">
+      <a href="${data.url}" target="_blank" style="color:#48dbfb">${data.url}</a>
+      &middot; ${data.frames_sampled} 帧采样
+    </p>
+    <div class="big-bar">${data.colors.map(c => `<div style="flex:${c.percentage};background:${c.hex}" title="${c.hex} (${c.percentage}%)"></div>`).join('')}</div>
+    ${rows}
+  `;
+  document.getElementById('detail').classList.add('active');
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function init() {
+  const app = document.getElementById('app');
+  const index = await loadIndex();
+
+  if (!index || index.length === 0) {
+    app.innerHTML = `<div class="empty">
+      <p style="font-size:1.2em;margin-bottom:0.5em">还没有分析过任何视频</p>
+      <p>去仓库的 <a href="https://github.com/BH3GEI/yt-video-colors/actions/workflows/analyze.yml" target="_blank">Actions</a> 页面手动触发分析</p>
+    </div>`;
+    return;
+  }
+
+  app.innerHTML = '';
+  app.classList.remove('loading');
+
+  for (const item of index) {
+    const card = renderCard(item);
+    app.appendChild(card);
+    // load full data for color bar
+    loadResult(item.video_id).then(data => {
+      if (!data) return;
+      const bar = document.getElementById(`bar-${item.video_id}`);
+      if (bar) bar.innerHTML = data.colors.map(c =>
+        `<div style="flex:${c.percentage};background:${c.hex}" title="${c.hex} (${c.percentage}%)"></div>`
+      ).join('');
+    });
+  }
+}
+
+document.getElementById('detail').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('detail').classList.remove('active');
+});
+
+init();
+</script>
+</body>
+</html>

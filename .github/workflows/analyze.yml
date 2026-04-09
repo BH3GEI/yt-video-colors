@@ -12,6 +12,11 @@ on:
         required: false
         default: '12'
         type: string
+      all_frames:
+        description: 'Analyze every frame (slow but precise)'
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: write
@@ -43,7 +48,11 @@ jobs:
       - name: Run analysis
         run: |
           mkdir -p results
-          python scripts/analyze.py "${{ github.event.inputs.youtube_url }}" "${{ github.event.inputs.n_colors }}" > result.json
+          ALL_FRAMES_FLAG=""
+          if [ "${{ github.event.inputs.all_frames }}" = "true" ]; then
+            ALL_FRAMES_FLAG="--all-frames"
+          fi
+          python scripts/analyze.py "${{ github.event.inputs.youtube_url }}" -n "${{ github.event.inputs.n_colors }}" $ALL_FRAMES_FLAG > result.json
           VIDEO_ID=$(python -c "import json; print(json.load(open('result.json'))['video_id'])")
           cp result.json "results/${VIDEO_ID}.json"
 

@@ -9,7 +9,7 @@ def extract_video_id(url):
     m = re.search(r'(?:v=|youtu\.be/)([\w-]{11})', url)
     return m.group(1) if m else url.replace('/', '_').replace(':', '_')
 
-def analyze(url, n_colors=12, interval=2):
+def analyze(url, n_colors=12, interval=2, all_frames=False):
     video_id = extract_video_id(url)
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -28,16 +28,22 @@ def analyze(url, n_colors=12, interval=2):
         title = title_result.stdout.strip() or video_id
 
         # 采样帧
-        subprocess.run([
+        vf_filter = "fps=1/0" if all_frames else f"fps=1/{interval}"
+        ffmpeg_cmd = [
             "ffmpeg", "-i", video_path,
-            "-vf", f"fps=1/{interval}",
-            os.path.join(tmpdir, "frame_%04d.png"),
             "-hide_banner", "-loglevel", "error"
-        ], check=True)
+        ]
+        if all_frames:
+            # 逐帧提取
+            ffmpeg_cmd += [os.path.join(tmpdir, "frame_%06d.png")]
+        else:
+            ffmpeg_cmd += ["-vf", f"fps=1/{interval}", os.path.join(tmpdir, "frame_%04d.png")]
+        subprocess.run(ffmpeg_cmd, check=True)
 
         # 分析颜色
         all_pixels = Counter()
         frames = sorted(glob.glob(os.path.join(tmpdir, "frame_*.png")))
+        print(f"📸 共 {len(frames)} 帧" + (" (逐帧)" if all_frames else f" (每{interval}秒)"), file=sys.stderr)
 
         for fp in frames:
             img = Image.open(fp).convert("RGB")
@@ -80,9 +86,13 @@ def analyze(url, n_colors=12, interval=2):
         }
 
 if __name__ == "__main__":
-    url = sys.argv[1]
-    n_colors = int(sys.argv[2]) if len(sys.argv) > 2 else 12
-    result = analyze(url, n_colors)
+    import argparse
+    parser = argparse.ArgumentParser(description="从 YouTube 视频提取主要颜色")
+    parser.add_argument("url", help="YouTube 视频 URL")
+    parser.add_argument("-n", "--n-colors", type=int, default=12, help="提取颜色数量 (默认 12)")
+    parser.add_argument("-i", "--interval", type=int, default=2, help="采样间隔秒数 (默认 2)")
+    parser.add_argument("--all-frames", action="store_true", help="逐帧分析（慢但精确）")
+    args = parser.parse_args()
 
-    # 输出到 stdout
+    result = analyze(args.url, args.n_colors, args.interval, args.all_frames)
     print(json.dumps(result, ensure_ascii=False, indent=2))

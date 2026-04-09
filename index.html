@@ -14,235 +14,590 @@
   }
   .header {
     text-align: center;
-    padding: 3em 1em 1.5em;
+    padding: 3em 1em 1em;
   }
-  .header h1 { font-size: 2.2em; font-weight: 700; }
-  .header h1 span { background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .header p { color: #888; margin-top: 0.5em; font-size: 0.95em; }
-  .container { max-width: 900px; margin: 0 auto; padding: 0 1.5em 3em; }
-
-  .card {
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 1.5em;
-    margin-bottom: 1.5em;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid #2a2a2a;
+  .header h1 { font-size: 2.4em; font-weight: 700; }
+  .header h1 span {
+    background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .header p { color: #666; margin-top: 0.4em; font-size: 0.95em; }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 1.5em 4em; }
 
-  .card-header { display: flex; align-items: center; gap: 1em; margin-bottom: 1em; }
-  .card-thumb { width: 120px; height: 68px; border-radius: 8px; object-fit: cover; background: #333; flex-shrink: 0; }
-  .card-info h3 { font-size: 1.05em; font-weight: 600; line-height: 1.3; }
-  .card-info .meta { color: #777; font-size: 0.82em; margin-top: 0.3em; }
+  /* Input area */
+  .input-area {
+    display: flex; gap: 0.6em; margin: 1.5em 0;
+    flex-wrap: wrap;
+  }
+  .input-area input[type="text"] {
+    flex: 1; min-width: 200px;
+    background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
+    color: #fff; padding: 0.8em 1.2em; font-size: 1em;
+    outline: none; transition: border-color 0.2s;
+  }
+  .input-area input:focus { border-color: #48dbfb; }
+  .input-area button {
+    padding: 0.8em 1.8em; border-radius: 12px; border: none;
+    font-size: 1em; font-weight: 600; cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .input-area button:hover { transform: translateY(-1px); }
+  .input-area button:active { transform: scale(0.97); }
+  .btn-analyze {
+    background: linear-gradient(135deg, #48dbfb, #0abde3);
+    color: #000;
+  }
+  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .options-row {
+    display: flex; align-items: center; gap: 1.2em;
+    margin-bottom: 1em; flex-wrap: wrap;
+  }
+  .options-row label {
+    font-size: 0.85em; color: #888; display: flex; align-items: center; gap: 0.4em; cursor: pointer;
+  }
+  .options-row input[type="checkbox"] { accent-color: #48dbfb; }
+  .options-row select {
+    background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+    color: #ccc; padding: 0.3em 0.6em; font-size: 0.85em;
+  }
+
+  /* Status */
+  .status {
+    text-align: center; padding: 1.5em; color: #888; font-size: 0.95em;
+  }
+  .status .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid #333; border-top-color: #48dbfb;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    vertical-align: middle; margin-right: 0.5em;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .progress-bar {
+    width: 100%; height: 4px; background: #222; border-radius: 2px;
+    margin-top: 0.8em; overflow: hidden;
+  }
+  .progress-bar .fill {
+    height: 100%; background: linear-gradient(90deg, #48dbfb, #0abde3);
+    border-radius: 2px; transition: width 0.3s;
+  }
+
+  /* Result */
+  .result { margin-top: 1.5em; }
+  .result-header {
+    display: flex; align-items: center; gap: 1em; margin-bottom: 1.2em;
+  }
+  .result-thumb {
+    width: 160px; height: 90px; border-radius: 10px; object-fit: cover; background: #222;
+  }
+  .result-info h2 { font-size: 1.15em; font-weight: 600; }
+  .result-info .meta { color: #666; font-size: 0.82em; margin-top: 0.3em; }
+  .result-info .meta a { color: #48dbfb; text-decoration: none; }
 
   .color-bar {
-    display: flex;
-    height: 40px;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 0.8em;
+    display: flex; height: 50px; border-radius: 12px;
+    overflow: hidden; margin: 1em 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
-  .color-bar div { transition: flex 0.3s; position: relative; }
+  .color-bar div {
+    transition: flex 0.3s; cursor: pointer; position: relative;
+  }
   .color-bar div:hover { flex-grow: 1.5 !important; }
+  .color-bar div .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); background: #222; color: #fff;
+    padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.75em;
+    white-space: nowrap; font-family: 'SF Mono', Monaco, monospace;
+    pointer-events: none;
+  }
+  .color-bar div:hover .tooltip { display: block; }
 
-  .color-list { display: flex; flex-wrap: wrap; gap: 0.5em; }
-  .color-chip {
-    display: flex; align-items: center; gap: 0.4em;
-    background: #222; border-radius: 8px; padding: 0.3em 0.7em;
-    font-size: 0.82em; font-family: 'SF Mono', Monaco, monospace;
-    cursor: pointer; transition: background 0.15s;
+  .color-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6em; margin-top: 1em;
   }
-  .color-chip:hover { background: #333; }
-  .color-chip .swatch {
-    width: 14px; height: 14px; border-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.15);
+  .color-card {
+    display: flex; align-items: center; gap: 0.7em;
+    background: #1a1a1a; border-radius: 10px; padding: 0.7em 0.9em;
+    cursor: pointer; transition: background 0.15s, transform 0.15s;
+    border: 1px solid #222;
   }
-  .color-chip .pct { color: #888; }
+  .color-card:hover { background: #252525; transform: translateY(-1px); }
+  .color-card .swatch {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .color-card .info { font-family: 'SF Mono', Monaco, monospace; font-size: 0.88em; }
+  .color-card .info .hex { font-weight: 600; }
+  .color-card .info .pct { color: #666; font-size: 0.82em; }
 
-  .detail-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85); z-index: 100;
-    overflow-y: auto; padding: 2em;
-  }
-  .detail-overlay.active { display: block; }
-  .detail-content {
-    max-width: 700px; margin: 0 auto;
-    background: #1a1a1a; border-radius: 16px; padding: 2em;
-  }
-  .detail-content .close {
-    float: right; background: none; border: none;
-    color: #888; font-size: 1.5em; cursor: pointer;
-  }
-  .detail-content .close:hover { color: #fff; }
-  .detail-content h2 { margin-bottom: 0.5em; }
-  .detail-content .big-bar { height: 60px; border-radius: 12px; overflow: hidden; display: flex; margin: 1em 0; }
-  .detail-color-row {
-    display: flex; align-items: center; gap: 1em;
-    padding: 0.6em 0; border-bottom: 1px solid #2a2a2a;
-    font-family: 'SF Mono', Monaco, monospace; font-size: 0.9em;
-  }
-  .detail-swatch { width: 40px; height: 28px; border-radius: 6px; }
   .copied-toast {
     position: fixed; bottom: 2em; left: 50%; transform: translateX(-50%);
     background: #333; color: #fff; padding: 0.6em 1.5em;
-    border-radius: 20px; font-size: 0.85em; opacity: 0; transition: opacity 0.3s;
-    z-index: 200;
+    border-radius: 20px; font-size: 0.85em; opacity: 0;
+    transition: opacity 0.3s; z-index: 200; pointer-events: none;
   }
   .copied-toast.show { opacity: 1; }
 
-  .empty {
-    text-align: center; padding: 4em 1em; color: #555;
+  /* History */
+  .history { margin-top: 3em; }
+  .history h3 { color: #555; font-size: 0.9em; margin-bottom: 0.8em; text-transform: uppercase; letter-spacing: 0.05em; }
+  .history-item {
+    display: flex; align-items: center; gap: 0.8em;
+    padding: 0.7em 0; border-bottom: 1px solid #1a1a1a;
+    cursor: pointer; transition: opacity 0.15s;
   }
-  .empty a { color: #48dbfb; text-decoration: none; }
+  .history-item:hover { opacity: 0.8; }
+  .history-item img { width: 64px; height: 36px; border-radius: 6px; object-fit: cover; }
+  .history-item .title { font-size: 0.85em; flex: 1; }
+  .history-item .colors-preview {
+    display: flex; height: 20px; width: 120px; border-radius: 4px; overflow: hidden; flex-shrink: 0;
+  }
 
-  .loading { text-align: center; padding: 3em; color: #666; }
+  canvas { display: none; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1><span>YouTube Video Colors</span></h1>
-  <p>从 YouTube 视频中提取主要颜色</p>
+  <p>输入视频链接，提取主要颜色</p>
 </div>
 
 <div class="container">
-  <div id="app" class="loading">加载中...</div>
-</div>
+  <div class="input-area">
+    <input type="text" id="urlInput" placeholder="粘贴 YouTube 视频链接..." spellcheck="false">
+    <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()">分析</button>
+  </div>
+  <div class="options-row">
+    <label>
+      颜色数量
+      <select id="nColors">
+        <option value="8">8</option>
+        <option value="12" selected>12</option>
+        <option value="16">16</option>
+        <option value="24">24</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" id="allFrames">
+      逐帧分析（更精确，较慢）
+    </label>
+  </div>
 
-<div class="detail-overlay" id="detail">
-  <div class="detail-content" id="detailContent"></div>
+  <div id="status"></div>
+  <div id="result"></div>
+  <div id="history" class="history"></div>
 </div>
 
 <div class="copied-toast" id="toast">已复制!</div>
+<canvas id="canvas"></canvas>
 
 <script>
-const REPO = location.hostname.includes('github.io')
-  ? '' // same origin
-  : 'https://raw.githubusercontent.com/' + (location.pathname.split('/')[1] || 'BH3GEI') + '/yt-video-colors/gh-pages';
+// ===== YouTube Storyboard & Frame Extraction =====
 
-async function loadIndex() {
-  const basePaths = [
-    'results/index.json',
-    REPO + '/results/index.json'
-  ];
-  for (const p of basePaths) {
+const PIPED_INSTANCES = [
+  'https://pipedapi.kavin.rocks',
+  'https://pipedapi.adminforge.de',
+  'https://api.piped.yt',
+];
+const INVIDIOUS_INSTANCES = [
+  'https://inv.nadeko.net',
+  'https://invidious.nerdvpn.de',
+  'https://invidious.jing.rocks',
+];
+const IMG_PROXY = 'https://wsrv.nl/?url=';
+
+function extractVideoId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|\/shorts\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+async function fetchWithFallback(urls, options = {}) {
+  for (const url of urls) {
     try {
-      const r = await fetch(p);
+      const r = await fetch(url, { signal: AbortSignal.timeout(10000), ...options });
       if (r.ok) return await r.json();
     } catch {}
   }
   return null;
 }
 
-async function loadResult(videoId) {
-  const paths = [
-    `results/${videoId}.json`,
-    `${REPO}/results/${videoId}.json`
-  ];
-  for (const p of paths) {
-    try {
-      const r = await fetch(p);
-      if (r.ok) return await r.json();
-    } catch {}
+async function getVideoInfo(videoId) {
+  // Try Piped first
+  const pipedUrls = PIPED_INSTANCES.map(i => `${i}/streams/${videoId}`);
+  let info = await fetchWithFallback(pipedUrls);
+  if (info) {
+    return {
+      title: info.title || videoId,
+      duration: info.duration || 0,
+      thumbnail: info.thumbnailUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      storyboards: info.previewFrames || [],
+      source: 'piped'
+    };
   }
+
+  // Fallback to Invidious
+  const invUrls = INVIDIOUS_INSTANCES.map(i => `${i}/api/v1/videos/${videoId}?fields=title,lengthSeconds,storyboards,videoThumbnails`);
+  info = await fetchWithFallback(invUrls);
+  if (info) {
+    return {
+      title: info.title || videoId,
+      duration: info.lengthSeconds || 0,
+      thumbnail: info.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      storyboards: info.storyboards || [],
+      source: 'invidious'
+    };
+  }
+
+  // Bare minimum fallback - just use thumbnails
+  return {
+    title: videoId,
+    duration: 0,
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    storyboards: [],
+    source: 'thumbnails'
+  };
+}
+
+function getStoryboardUrls(info) {
+  if (info.source === 'piped' && info.storyboards?.length) {
+    // Piped previewFrames: array of { urls: [...], frameWidth, frameHeight, framesPerPageX, framesPerPageY }
+    // Pick the highest resolution storyboard set
+    const best = info.storyboards.reduce((a, b) =>
+      (a.frameWidth || 0) > (b.frameWidth || 0) ? a : b
+    );
+    return {
+      urls: best.urls || [],
+      fw: best.frameWidth || 48,
+      fh: best.frameHeight || 27,
+      cols: best.framesPerPageX || 5,
+      rows: best.framesPerPageY || 5,
+    };
+  }
+
+  if (info.source === 'invidious' && info.storyboards?.length) {
+    const best = info.storyboards.reduce((a, b) =>
+      (a.width || 0) > (b.width || 0) ? a : b
+    );
+    // Invidious: { url, templateUrl, width, height, count, interval, storyboardWidth, storyboardHeight }
+    const count = best.count || 1;
+    const cols = best.storyboardWidth || 5;
+    const rows = best.storyboardHeight || 5;
+    const urls = [];
+    const perPage = cols * rows;
+    const pages = Math.ceil(count / perPage);
+    for (let i = 0; i < pages; i++) {
+      const u = (best.templateUrl || best.url || '').replace('$M', i).replace('M$', i);
+      if (u) urls.push(u);
+    }
+    return { urls, fw: best.width || 48, fh: best.height || 27, cols, rows };
+  }
+
   return null;
+}
+
+function proxyUrl(url) {
+  if (!url) return '';
+  // Make sure url is absolute
+  if (url.startsWith('//')) url = 'https:' + url;
+  return IMG_PROXY + encodeURIComponent(url);
+}
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load: ' + url));
+    img.src = url;
+  });
+}
+
+// ===== Color Analysis =====
+
+function analyzePixels(imageData, quantBits = 3) {
+  const shift = 8 - quantBits;
+  const data = imageData.data;
+  const counts = new Map();
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = (data[i] >> shift) << shift;
+    const g = (data[i + 1] >> shift) << shift;
+    const b = (data[i + 2] >> shift) << shift;
+    const key = (r << 16) | (g << 8) | b;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+
+  return counts;
+}
+
+function mergeCountMaps(maps) {
+  const merged = new Map();
+  for (const m of maps) {
+    for (const [k, v] of m) {
+      merged.set(k, (merged.get(k) || 0) + v);
+    }
+  }
+  return merged;
+}
+
+function topColors(countMap, n) {
+  const entries = [...countMap.entries()];
+  entries.sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((s, e) => s + e[1], 0);
+
+  return entries.slice(0, n).map(([key, count]) => ({
+    hex: '#' + ((key >> 16) & 0xFF).toString(16).padStart(2, '0').toUpperCase()
+              + ((key >> 8) & 0xFF).toString(16).padStart(2, '0').toUpperCase()
+              + (key & 0xFF).toString(16).padStart(2, '0').toUpperCase(),
+    rgb: [(key >> 16) & 0xFF, (key >> 8) & 0xFF, key & 0xFF],
+    percentage: Math.round(count / total * 10000) / 100,
+  }));
+}
+
+// ===== Main Logic =====
+
+let analysisAbort = null;
+
+async function startAnalysis() {
+  const urlInput = document.getElementById('urlInput');
+  const url = urlInput.value.trim();
+  const videoId = extractVideoId(url);
+  if (!videoId) {
+    showStatus('请输入有效的 YouTube 链接', false);
+    return;
+  }
+
+  const nColors = parseInt(document.getElementById('nColors').value);
+  const allFrames = document.getElementById('allFrames').checked;
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  const resultEl = document.getElementById('result');
+  resultEl.innerHTML = '';
+
+  try {
+    showStatus('<span class="spinner"></span>获取视频信息...', true);
+    const info = await getVideoInfo(videoId);
+
+    const sb = getStoryboardUrls(info);
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const colorMaps = [];
+
+    if (sb && sb.urls.length > 0) {
+      // Use storyboard sprites
+      const totalPages = sb.urls.length;
+      const step = allFrames ? 1 : Math.max(1, Math.floor(totalPages / 15));
+      const pagesToProcess = [];
+      for (let i = 0; i < totalPages; i += step) pagesToProcess.push(i);
+      if (!allFrames && pagesToProcess.length < 3) {
+        // Use all if too few
+        for (let i = 0; i < totalPages; i++) {
+          if (!pagesToProcess.includes(i)) pagesToProcess.push(i);
+        }
+        pagesToProcess.sort((a, b) => a - b);
+      }
+
+      const totalFrames = pagesToProcess.length * sb.cols * sb.rows;
+      let processed = 0;
+
+      for (let idx = 0; idx < pagesToProcess.length; idx++) {
+        const pageIdx = pagesToProcess[idx];
+        const imgUrl = sb.urls[pageIdx];
+        showStatus(`<span class="spinner"></span>分析中... (${idx + 1}/${pagesToProcess.length} 页)`, true, (idx / pagesToProcess.length) * 100);
+
+        try {
+          const img = await loadImage(proxyUrl(imgUrl));
+          // Extract each frame from the sprite
+          for (let row = 0; row < sb.rows; row++) {
+            for (let col = 0; col < sb.cols; col++) {
+              canvas.width = sb.fw;
+              canvas.height = sb.fh;
+              ctx.drawImage(img, col * sb.fw, row * sb.fh, sb.fw, sb.fh, 0, 0, sb.fw, sb.fh);
+              const imgData = ctx.getImageData(0, 0, sb.fw, sb.fh);
+              colorMaps.push(analyzePixels(imgData));
+              processed++;
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to load storyboard page', pageIdx, e);
+        }
+      }
+    } else {
+      // Fallback: use YouTube thumbnails (4 available per video)
+      showStatus('<span class="spinner"></span>使用缩略图分析...', true, 0);
+      const thumbUrls = [
+        `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        `https://i.ytimg.com/vi/${videoId}/1.jpg`,
+        `https://i.ytimg.com/vi/${videoId}/2.jpg`,
+        `https://i.ytimg.com/vi/${videoId}/3.jpg`,
+      ];
+      for (let i = 0; i < thumbUrls.length; i++) {
+        showStatus(`<span class="spinner"></span>分析缩略图 ${i + 1}/4...`, true, (i / 4) * 100);
+        try {
+          const img = await loadImage(proxyUrl(thumbUrls[i]));
+          canvas.width = 160;
+          canvas.height = 90;
+          ctx.drawImage(img, 0, 0, 160, 90);
+          const imgData = ctx.getImageData(0, 0, 160, 90);
+          colorMaps.push(analyzePixels(imgData));
+        } catch (e) {
+          console.warn('Failed to load thumbnail', i, e);
+        }
+      }
+    }
+
+    if (colorMaps.length === 0) {
+      showStatus('无法获取视频帧，请检查链接或稍后重试', false);
+      return;
+    }
+
+    showStatus('<span class="spinner"></span>计算颜色...', true, 90);
+    const merged = mergeCountMaps(colorMaps);
+    const colors = topColors(merged, nColors);
+
+    const result = {
+      video_id: videoId,
+      title: info.title,
+      url: url,
+      thumbnail: info.thumbnail,
+      analyzed_at: new Date().toISOString(),
+      frames_analyzed: colorMaps.length,
+      all_frames: allFrames,
+      colors: colors
+    };
+
+    // Save to localStorage history
+    saveToHistory(result);
+    renderResult(result);
+    showStatus('', false);
+
+  } catch (e) {
+    console.error(e);
+    showStatus('分析失败: ' + e.message, false);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ===== Rendering =====
+
+function showStatus(msg, showProgress, pct) {
+  const el = document.getElementById('status');
+  if (!msg) { el.innerHTML = ''; return; }
+  let html = `<div class="status">${msg}`;
+  if (showProgress && pct !== undefined) {
+    html += `<div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderResult(data) {
+  const el = document.getElementById('result');
+  const thumbSrc = data.thumbnail?.startsWith('http')
+    ? proxyUrl(data.thumbnail)
+    : (data.thumbnail || `https://i.ytimg.com/vi/${data.video_id}/hqdefault.jpg`);
+
+  const bar = data.colors.map(c =>
+    `<div style="flex:${c.percentage};background:${c.hex}" onclick="copyHex('${c.hex}')">
+      <span class="tooltip">${c.hex} (${c.percentage}%)</span>
+    </div>`
+  ).join('');
+
+  const cards = data.colors.map((c, i) =>
+    `<div class="color-card" onclick="copyHex('${c.hex}')">
+      <div class="swatch" style="background:${c.hex}"></div>
+      <div class="info">
+        <div class="hex">${c.hex}</div>
+        <div class="pct">${c.percentage}%</div>
+      </div>
+    </div>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="result">
+      <div class="result-header">
+        <img class="result-thumb" src="${thumbSrc}" alt="">
+        <div class="result-info">
+          <h2>${esc(data.title)}</h2>
+          <div class="meta">
+            <a href="${data.url}" target="_blank">${data.url}</a>
+            &middot; ${data.frames_analyzed} 帧${data.all_frames ? ' (逐帧)' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="color-bar">${bar}</div>
+      <div class="color-grid">${cards}</div>
+    </div>
+  `;
 }
 
 function copyHex(hex) {
-  navigator.clipboard.writeText(hex);
+  navigator.clipboard.writeText(hex).catch(() => {});
   const t = document.getElementById('toast');
   t.textContent = `已复制 ${hex}`;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 1200);
 }
 
-function renderCard(item) {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.onclick = () => showDetail(item.video_id);
-  const date = new Date(item.analyzed_at).toLocaleDateString('zh-CN');
-  card.innerHTML = `
-    <div class="card-header">
-      <img class="card-thumb" src="https://i.ytimg.com/vi/${item.video_id}/mqdefault.jpg" alt="">
-      <div class="card-info">
-        <h3>${esc(item.title)}</h3>
-        <div class="meta">${date}</div>
-      </div>
-    </div>
-    <div class="color-bar" id="bar-${item.video_id}"></div>
-  `;
-  return card;
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
 }
 
-async function showDetail(videoId) {
-  const data = await loadResult(videoId);
-  if (!data) return;
-  const el = document.getElementById('detailContent');
-  const thumbSrc = data.thumbnail
-    ? `data:image/jpeg;base64,${data.thumbnail}`
-    : `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-  let rows = data.colors.map((c, i) => `
-    <div class="detail-color-row" onclick="copyHex('${c.hex}')" title="点击复制">
-      <span style="color:#666">${i + 1}</span>
-      <div class="detail-swatch" style="background:${c.hex}"></div>
-      <span>${c.hex}</span>
-      <span style="color:#666;margin-left:auto">${c.percentage}%</span>
-    </div>
-  `).join('');
-  el.innerHTML = `
-    <button class="close" onclick="document.getElementById('detail').classList.remove('active')">&times;</button>
-    <h2>${esc(data.title)}</h2>
-    <p style="color:#777;font-size:0.85em;margin-bottom:1em">
-      <a href="${data.url}" target="_blank" style="color:#48dbfb">${data.url}</a>
-      &middot; ${data.frames_sampled} 帧采样
-    </p>
-    <div class="big-bar">${data.colors.map(c => `<div style="flex:${c.percentage};background:${c.hex}" title="${c.hex} (${c.percentage}%)"></div>`).join('')}</div>
-    ${rows}
-  `;
-  document.getElementById('detail').classList.add('active');
+// ===== History (localStorage) =====
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('yt-color-history') || '[]'); }
+  catch { return []; }
 }
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function saveToHistory(result) {
+  const hist = getHistory().filter(h => h.video_id !== result.video_id);
+  hist.unshift(result);
+  if (hist.length > 20) hist.length = 20;
+  localStorage.setItem('yt-color-history', JSON.stringify(hist));
+  renderHistory();
+}
 
-async function init() {
-  const app = document.getElementById('app');
-  const index = await loadIndex();
+function renderHistory() {
+  const hist = getHistory();
+  const el = document.getElementById('history');
+  if (hist.length === 0) { el.innerHTML = ''; return; }
 
-  if (!index || index.length === 0) {
-    app.innerHTML = `<div class="empty">
-      <p style="font-size:1.2em;margin-bottom:0.5em">还没有分析过任何视频</p>
-      <p>去仓库的 <a href="https://github.com/BH3GEI/yt-video-colors/actions/workflows/analyze.yml" target="_blank">Actions</a> 页面手动触发分析</p>
+  const items = hist.map(h => {
+    const colorsPreview = (h.colors || []).slice(0, 6).map(c =>
+      `<div style="flex:${c.percentage};background:${c.hex}"></div>`
+    ).join('');
+    return `<div class="history-item" onclick="loadFromHistory('${h.video_id}')">
+      <img src="${proxyUrl(h.thumbnail || `https://i.ytimg.com/vi/${h.video_id}/hqdefault.jpg`)}" alt="">
+      <span class="title">${esc(h.title)}</span>
+      <div class="colors-preview">${colorsPreview}</div>
     </div>`;
-    return;
-  }
+  }).join('');
 
-  app.innerHTML = '';
-  app.classList.remove('loading');
+  el.innerHTML = `<h3>历史记录</h3>${items}`;
+}
 
-  for (const item of index) {
-    const card = renderCard(item);
-    app.appendChild(card);
-    // load full data for color bar
-    loadResult(item.video_id).then(data => {
-      if (!data) return;
-      const bar = document.getElementById(`bar-${item.video_id}`);
-      if (bar) bar.innerHTML = data.colors.map(c =>
-        `<div style="flex:${c.percentage};background:${c.hex}" title="${c.hex} (${c.percentage}%)"></div>`
-      ).join('');
-    });
+function loadFromHistory(videoId) {
+  const hist = getHistory();
+  const data = hist.find(h => h.video_id === videoId);
+  if (data) {
+    document.getElementById('urlInput').value = data.url;
+    renderResult(data);
+    document.getElementById('status').innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
-document.getElementById('detail').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
+// ===== Init =====
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startAnalysis();
 });
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('detail').classList.remove('active');
-});
-
-init();
+renderHistory();
 </script>
 </body>
 </html>
